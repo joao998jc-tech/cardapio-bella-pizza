@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2A180D">
+<meta name="description" content="Bella Pizza — O verdadeiro sabor da pizza feita no forno a lenha. Pizzas salgadas e doces, pastéis, esfihas, porções e bebidas em Sarapuí-SP. Peça pelo WhatsApp.">
+<title>Bella Pizza — Cardápio · Forno a lenha</title>
+<link rel="icon" type="image/png" href="LOGO.png">
+<link rel="apple-touch-icon" href="LOGO.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ═══ PALETA BELLA PIZZA — cores 100% derivadas da marca (forno a lenha) ═══
+     ATENÇÃO (anti-armadilha): NOME da variável × PAPEL na UI × valor HEX real.
+     Os nomes (--navy/--orange/--mustard/--acai) são só "slots" ESTRUTURAIS
+     herdados do molde; o VALOR de cada um é cor da marca BELLA PIZZA.
+     Nenhuma cor de qualquer outra marca sobrevive aqui. Whitelist da marca:
+       forno/madeira: #2A180D #241408 #33200F #3A2212 #3E2415 #4A2A17 #1A0F07
+       creme (texto claro): #F5E6C8
+       âmbar/dourado (PREÇOS/destaque): #E8A33D · queimado #C4681E
+       laranja de fogo (calor/CTA): #E8912B
+       vermelho italiano (acento/CTA): #C0392B · hover #A93226
+       verde italiano (status aberto): #3E7D3A
+     Tema ESCURO texturizado de forno (página escura + texto creme), diferente
+     do molde claro — decisão de branding da Bella. */
+  :root{
+    /* base ESCURA de cards/painéis/hero/nav/tabbar = MARROM FORNO */
+    --navy:#3A2212; --navy-2:#4A2A17; --navy-deep:#2A180D;
+    /* fundo da PÁGINA = forno profundo + texto principal = CREME */
+    --cream:#F5E6C8; --paper:#241408; --char:#F5E6C8;
+    /* "chrome/faixa" = ÂMBAR ; borda âmbar = âmbar queimado */
+    --orange:#E8A33D; --orange-deep:#C4681E; --mustard:#C0392B;
+    /* status positivo = VERDE italiano ; CTA/destaque/remover = VERMELHO italiano */
+    --green:#3E7D3A; --red:#C0392B;
+    /* slots "acai" reaproveitados em tons quentes da marca (fogo/âmbar) */
+    --acai:#E8912B; --acai-2:#E8A33D; --acai-deep:#C4681E;
+    /* superfície de modais/cards claros -> AQUI escuros (tema forno) */
+    --card:#33200F;
+    /* linhas/bordas e texto suave baseados no CREME sobre fundo escuro */
+    --line: rgba(245,230,200,0.14); --ink-soft: rgba(245,230,200,0.62);
+    --shadow: 0 12px 30px -16px rgba(20,10,4,0.72);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;font-size:18px;background:var(--paper);}
+  body{
+    margin:0; padding-bottom:58px;
+    min-height:100%;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(232,145,43,0.08), transparent 46%),
+      radial-gradient(circle at 90% 12%, rgba(192,57,43,0.06), transparent 40%),
+      linear-gradient(180deg, #2A180D 0%, #241408 40%, #1E1006 100%);
+    background-attachment: fixed;
+    color:var(--char);
+    font-family:"Inter",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;}
+  .display{
+    font-family:"Cinzel","Playfair Display",Georgia,"Times New Roman",serif;
+    font-weight:700; letter-spacing:0.02em; text-transform:uppercase; text-wrap:balance;
+  }
+  a{color:inherit;}
+
+  /* HERO */
+  .hero{
+    background: radial-gradient(circle at 12% 15%, rgba(232,145,43,0.12), transparent 44%), linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color:#F5E6C8; padding:38px 20px 26px; position:relative; overflow:hidden;
+    border-bottom:2px solid rgba(232,163,61,0.28);
+  }
+  .hero::after{ content:""; position:absolute; right:-100px; top:-100px; width:280px; height:280px; border-radius:50%; border:2px dashed rgba(232,163,61,0.16); }
+  .hero-inner{max-width:820px;margin:0 auto;position:relative;display:flex;gap:16px;align-items:center;}
+  .hero-text{padding-right:clamp(100px,32vw,150px);}
+  .badge{width:120px;height:120px;border-radius:50%;overflow:hidden;flex:none;background:#1A0F07;display:flex;align-items:center;justify-content:center;border:2px solid rgba(232,163,61,0.6);box-shadow:0 6px 18px -8px rgba(20,10,4,0.7);}
+  .badge img{width:100%;height:100%;object-fit:cover;}
+  .hero h1{font-size:clamp(1.7rem,5.4vw,2.3rem);margin:0 0 6px;line-height:1.05;color:#F6E7C9;}
+  .hero .sub{font-size:0.95rem;color:rgba(245,230,200,0.82);margin:0 0 6px;font-style:italic;}
+  .hero .tagline{font-size:0.84rem;color:rgba(245,230,200,0.62);display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:10px;}
+  .hero .tagline strong{color:#F5E6C8;font-weight:700;font-style:normal;}
+  .status-pill{
+    position:absolute; top:60px; right:-16px; display:flex;align-items:center;gap:6px;
+    background:rgba(245,230,200,0.1); border:1px solid rgba(245,230,200,0.3); border-radius:20px;
+    padding:8px 14px 8px 12px; font-size:0.82rem;font-weight:700; color:#F5E6C8; letter-spacing:0.02em;
+  }
+  .status-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(62,125,58,0.28);flex:none;}
+  .status-pill.closed .dot{background:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,0.25);}
+  .status-pill.closed{color:rgba(245,230,200,0.75);}
+  @media (max-width:380px){ .status-pill{top:54px;right:-14px;padding:6px 10px 6px 9px;font-size:0.74rem;} .hero-text{padding-right:clamp(84px,34vw,120px);} }
+
+  /* PROMO BANNER — desligado por padrão (demo). Paleta da marca: vermelho + creme. */
+  .promo-banner{
+    display:none; position:relative; overflow:hidden;
+    background: linear-gradient(110deg, #C0392B 0%, #C4681E 100%);
+    padding:18px 20px;
+    border-top:2px solid rgba(245,230,200,0.25);
+    border-bottom:2px solid rgba(20,10,4,0.28);
+  }
+  .promo-banner.show{display:block;}
+  .promo-inner{position:relative;z-index:1;max-width:820px;margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;}
+  .promo-text{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0;}
+  .promo-today{flex:none;background:#3A2212;color:#F5E6C8;font-size:0.82rem;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:9px;box-shadow:0 4px 14px rgba(20,10,4,0.3);}
+  .promo-copy{min-width:0;}
+  .promo-eyebrow{font-size:0.8rem;font-weight:900;letter-spacing:0.09em;text-transform:uppercase;color:#FFFFFF;margin:0 0 2px;display:flex;align-items:center;gap:6px;}
+  .promo-title{font-size:1.35rem;font-weight:900;color:#FFFFFF;margin:0;line-height:1.15;text-shadow:0 2px 6px rgba(20,10,4,0.34);}
+  .promo-desc{font-size:0.96rem;font-weight:600;color:rgba(255,255,255,0.92);margin:2px 0 0;}
+  .promo-cta{flex:none;display:inline-flex;align-items:center;gap:6px;background:#3A2212;color:#F5E6C8;font-size:1rem;font-weight:900;letter-spacing:0.02em;padding:14px 24px;border-radius:12px;text-decoration:none;white-space:nowrap;border:2px solid rgba(245,230,200,0.45);cursor:pointer;min-height:50px;box-shadow:0 6px 18px rgba(20,10,4,0.32);}
+  .promo-cta:hover{background:#2A180D;}
+  @media (max-width:480px){
+    .promo-inner{gap:12px;}
+    .promo-title{font-size:1.15rem;}
+    .promo-cta{width:100%;justify-content:center;}
+  }
+
+  /* TOOLBAR */
+  .toolbar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:14px 20px 0;}
+  .toolbar-inner{max-width:820px;margin:0 auto;}
+  .search{display:flex;align-items:center;gap:10px;background:var(--orange);border:1px solid var(--acai-deep);border-radius:12px;padding:13px 16px;margin-bottom:14px;color:#2A180D;}
+  .search svg{flex:none;opacity:0.7;}
+  .search input{border:none;outline:none;background:transparent;font-size:1.05rem;color:#2A180D;width:100%;}
+  .search input::placeholder{color:rgba(42,24,13,0.55);}
+  .cat-nav{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;background:var(--navy);border-radius:16px;padding:10px;margin-bottom:12px;}
+  .cat-nav::-webkit-scrollbar{display:none;}
+  .cat-nav button{
+    flex:none;display:flex;align-items:center;gap:7px;font-size:0.9rem;font-weight:700;
+    padding:12px 18px;border-radius:22px;background:var(--orange);border:1px solid var(--acai-deep);
+    color:#2A180D;white-space:nowrap;cursor:pointer;min-height:46px;
+  }
+  .cat-nav button.active{background:var(--mustard);border-color:#F5E6C8;border-width:2px;color:#FFFFFF;}
+  .cat-icon{font-size:1.55em;line-height:1;filter:drop-shadow(0 1px 3px rgba(20,10,4,0.45));}
+
+  .wrap{max-width:820px;margin:0 auto;padding:16px 20px 40px;}
+  .empty-state{display:none;text-align:center;padding:60px 20px;color:var(--ink-soft);font-size:1.02rem;}
+
+  .category{display:none;}
+  .category.active{display:block;}
+  .category-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .category-head h2{font-family:"Cinzel","Playfair Display",Georgia,serif;font-size:1.45rem;margin:0;letter-spacing:0.02em;color:#F6E7C9;}
+  .category-head .count{font-size:0.84rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .category-note{font-size:0.9rem;color:rgba(245,230,200,0.78);margin:-4px 0 12px;font-style:italic;}
+  .subhead{font-size:0.82rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin:18px 0 8px;padding-left:4px;}
+  .subhead:first-child{margin-top:0;}
+
+  .panel{background:var(--navy);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(232,163,61,0.1);}
+  .item{padding:18px;border-top:1px solid rgba(245,230,200,0.12);display:flex;gap:14px;justify-content:space-between;color:#F5E6C8;flex-wrap:wrap;}
+  .item:first-child{border-top:none;}
+  .item-main{min-width:0;}
+  .item-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;}
+  .item-name{font-weight:700;font-size:1.12rem;}
+  .pill{font-size:0.7rem;font-weight:800;letter-spacing:0.04em;padding:3px 10px;border-radius:20px;text-transform:uppercase;white-space:nowrap;}
+  .pill.new{background:var(--orange);color:#2A180D;}
+  .pill.fav{background:var(--mustard);color:#FFFFFF;}
+  .item-desc{font-style:italic;font-size:0.92rem;color:rgba(245,230,200,0.72);line-height:1.45;}
+  .item-side{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;margin-left:auto;}
+  .price{font-weight:800;font-variant-numeric:tabular-nums;color:var(--orange);font-size:1.16rem;white-space:nowrap;}
+  .add-btn{
+    display:flex;align-items:center;gap:6px;background:rgba(245,230,200,0.1);border:1px solid rgba(245,230,200,0.32);
+    color:#F5E6C8;font-size:0.92rem;font-weight:700;padding:11px 18px;border-radius:10px;white-space:nowrap;cursor:pointer;min-height:44px;
+    transition:background .15s ease;
+  }
+  .add-btn:hover{background:var(--orange);border-color:var(--orange);color:#2A180D;}
+  .size-rows{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+  .size-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .size-row .price{font-size:1rem;}
+  .size-row span.lbl{font-size:0.88rem;color:rgba(245,230,200,0.75);}
+
+  footer{max-width:820px;margin:60px auto 0;padding:24px 20px 0;border-top:1px solid var(--line);font-size:0.9rem;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer a{color:var(--orange);text-decoration:none;font-weight:700;background:none;border:none;cursor:pointer;font-size:inherit;padding:4px 0;display:inline-block;}
+
+  /* BOTTOM TABBAR */
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:var(--navy);border-top:1px solid rgba(245,230,200,0.14);
+    display:flex;padding:3px 4px calc(3px + env(safe-area-inset-bottom));
+    box-shadow:0 -8px 20px -12px rgba(20,10,4,0.5);
+  }
+  .tab-btn{
+    flex:1;background:none;border:none;color:rgba(245,230,200,0.6);display:flex;flex-direction:column;
+    align-items:center;gap:2px;font-size:0.66rem;font-weight:700;padding:4px 2px;cursor:pointer;position:relative;min-height:40px;
+  }
+  .tab-btn.active{color:#F5E6C8;}
+  .tab-btn .ic{font-size:1.15rem;}
+  .tab-badge{
+    position:absolute;top:0;right:18%;background:var(--red);color:#FFFFFF;font-size:0.68rem;font-weight:800;
+    min-width:19px;height:19px;border-radius:20px;display:flex;align-items:center;justify-content:center;padding:0 4px;
+  }
+
+  /* CART FAB */
+  .cart-fab{
+    position:fixed;left:20px;right:20px;bottom:66px;z-index:60;max-width:780px;margin:0 auto;
+    background:var(--red);color:#FFFFFF;border:none;border-radius:14px;padding:14px 18px;
+    display:none;align-items:center;justify-content:space-between;font-weight:800;font-size:1.05rem;min-height:56px;
+    box-shadow:0 12px 26px -10px rgba(192,57,43,0.6);cursor:pointer;
+  }
+  .cart-fab.show{display:flex;}
+  .cart-fab.pulse{animation:cart-pulse .35s ease;}
+  @keyframes cart-pulse{0%,100%{transform:scale(1);}45%{transform:scale(1.04);}}
+
+  /* MODAL SYSTEM */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(15,8,3,0.62);z-index:200;
+    display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:auto;}
+  @media (min-width:600px){ .modal-overlay{align-items:center;} }
+  .modal{
+    background:var(--card);width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+    border-radius:18px 18px 0 0;transform:translateY(24px);transition:transform .25s;
+    border:1px solid rgba(232,163,61,0.14);
+  }
+  .modal-overlay.open .modal{transform:translateY(0);}
+  @media (min-width:600px){ .modal{border-radius:16px;} }
+  .modal-header{position:sticky;top:0;background:var(--card);padding:18px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);z-index:2;}
+  .modal-header h3{margin:0;font-size:1.2rem;color:#F6E7C9;}
+  .modal-close{background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--char);line-height:1;min-width:36px;min-height:36px;}
+  .modal-body{padding:20px;}
+
+  /* CART DRAWER */
+  .cart-items{display:flex;flex-direction:column;gap:0;}
+  .cart-empty{text-align:center;color:var(--ink-soft);padding:40px 0;font-size:1rem;}
+  .cart-empty .ic{font-size:2rem;display:block;margin-bottom:8px;}
+  .cart-line{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line);}
+  .cart-line:first-child{border-top:none;}
+  .cart-line-name{font-weight:700;font-size:1.05rem;}
+  .cart-line-detail{font-size:0.86rem;color:var(--ink-soft);}
+  .cart-line-price{font-weight:800;color:var(--orange);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .cart-line-controls{display:flex;align-items:center;gap:8px;}
+  .qty-btn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-weight:800;font-size:1.1rem;color:var(--char);}
+  .cart-line-remove{background:none;border:none;color:var(--red);font-size:0.84rem;font-weight:700;cursor:pointer;padding:4px 0;}
+  .cart-footer{border-top:1px solid var(--line);padding:16px 20px;}
+  .cart-total-row{display:flex;justify-content:space-between;font-weight:800;font-size:1.25rem;margin-bottom:14px;}
+  .cart-total-row span:last-child{color:var(--orange);}
+
+  /* FORM ELEMENTS */
+  .field-label{display:block;font-size:0.92rem;font-weight:700;margin:16px 0 7px;}
+  .field-label:first-child{margin-top:0;}
+  .field-input, .field-textarea{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:13px 14px;
+    font-size:1rem;font-family:inherit;background:var(--paper);color:var(--char);min-height:48px;
+  }
+  .field-input::placeholder, .field-textarea::placeholder{color:rgba(245,230,200,0.4);}
+  .field-textarea{min-height:64px;resize:vertical;}
+  .chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{
+    border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:14px 16px;
+    font-size:0.96rem;font-weight:700;cursor:pointer;color:var(--char);flex:1;text-align:center;min-width:120px;min-height:48px;display:flex;align-items:center;justify-content:center;
+  }
+  .chip.selected{background:var(--orange);border-color:var(--orange);border-width:2px;color:#2A180D;}
+  .btn-primary{
+    width:100%;padding:16px;border:none;border-radius:11px;background:var(--red);color:#fff;
+    font-weight:800;font-size:1.05rem;cursor:pointer;margin-top:16px;min-height:52px;
+  }
+  .btn-primary:disabled{background:rgba(245,230,200,0.16);color:var(--ink-soft);cursor:not-allowed;}
+  .btn-secondary{width:100%;padding:14px;border:1px solid var(--line);border-radius:10px;background:none;color:var(--char);font-weight:700;font-size:0.96rem;cursor:pointer;margin-top:8px;min-height:48px;}
+  .info-row{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
+  .info-row:first-child{border-top:none;}
+  .info-row .ic{font-size:1.15rem;flex:none;}
+  .info-row .lbl{font-size:0.76rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-soft);}
+  .info-row .val{font-size:1.02rem;font-weight:700;margin-top:2px;}
+  .pix-box{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:14px;text-align:center;margin-top:10px;}
+  .note{font-size:0.84rem;color:var(--ink-soft);margin-top:10px;line-height:1.5;}
+  .ing-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .ing-chip{border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:9px 14px;font-size:0.9rem;font-weight:600;cursor:pointer;color:var(--char);}
+  .ing-chip.removed{background:rgba(192,57,43,0.16);border-color:var(--red);color:#E88A80;text-decoration:line-through;}
+  .cart-line-custom{font-size:0.82rem;color:var(--ink-soft);margin-top:2px;}
+  .cart-line-custom.removed{color:#E88A80;}
+
+  /* TOAST */
+  .toast{
+    position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
+    background:#3A2212;color:#F5E6C8;padding:13px 20px;border-radius:10px;font-size:0.94rem;font-weight:600;
+    z-index:300;opacity:0;pointer-events:none;transition:all .25s;box-shadow:var(--shadow);
+    max-width:88vw;white-space:normal;text-align:center;
+    border:1px solid rgba(232,163,61,0.2);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* RESPONSIVIDADE REFORÇADA — telas pequenas */
+  @media (max-width:520px){
+    html{font-size:16.5px;}
+    .hero{padding:30px 16px 22px;}
+    .badge{width:88px;height:88px;}
+    .hero h1{font-size:1.7rem;}
+    .wrap{padding:16px 14px 40px;}
+    .toolbar{padding:12px 14px 0;}
+    .item{padding:16px 14px;}
+    .item-side{width:auto;align-items:center;margin-left:auto;}
+    .item-side .add-btn{width:auto;justify-content:center;}
+    .size-rows{width:100%;}
+    .size-row{width:100%;justify-content:space-between;}
+    .size-row .add-btn{flex:none;}
+    .chip-row{flex-direction:column;}
+    .chip{min-width:0;}
+  }
+  @media (min-width:900px){
+    html{font-size:18.5px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="badge"><img src="LOGO.png" alt="Logo Bella Pizza - Forno a lenha" width="120" height="120"></div>
+    <div class="hero-text">
+      <h1 class="display">Bella Pizza</h1>
+      <p class="sub">O verdadeiro sabor da pizza feita no forno a lenha</p>
+      <div class="tagline"><span>🔥 <strong>Forno a lenha</strong></span><span>📍 Sarapuí-SP</span></div>
+    </div>
+    <div class="status-pill" id="statusPill"><span class="dot"></span><span id="statusText">Aberto agora</span></div>
+  </div>
+</div>
+
+<!-- ═══ PROMO BANNER (desligado por padrão nesta demo) ═══ -->
+<div class="promo-banner" id="promoBanner">
+  <div class="promo-inner">
+    <div class="promo-text">
+      <span class="promo-today" id="promoToday">Hoje</span>
+      <div class="promo-copy">
+        <p class="promo-eyebrow">Promoção</p>
+        <p class="promo-title" id="promoTitle">Promoção da Casa</p>
+        <p class="promo-desc" id="promoDesc">Pergunta pra gente qual é a promoção de hoje.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOOLBAR ═══ -->
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="search">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="Buscar no cardápio (ex: calabresa, catupiry, doce)"/>
+    </div>
+    <nav class="cat-nav" id="catNav"></nav>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="menu"></div>
+  <div class="empty-state" id="emptyState">Nenhum item encontrado. Tenta buscar por outro nome.</div>
+</div>
+
+<footer>
+  <span>Bella Pizza · Forno a lenha</span>
+  <span>Pedidos: <a id="footerWhats" href="https://wa.me/5515998048078" target="_blank" rel="noopener">Chamar no WhatsApp</a></span>
+  <span style="width:100%;font-size:0.78rem;opacity:0.8;">Cardápio demonstrativo — endereço, horário e telefone serão confirmados com a loja. Itens, descrições e valores conforme cardápio da Bella Pizza.</span>
+</footer>
+
+<!-- ═══ CART FAB ═══ -->
+<button type="button" class="cart-fab" id="cartFab" onclick="openModal('cart')">
+  <span id="cartFabLabel">🛒 0 itens</span>
+  <span id="cartFabTotal">R$0,00</span>
+</button>
+
+<!-- ═══ TABBAR ═══ -->
+<nav class="tabbar">
+  <button type="button" class="tab-btn active" id="tabInicio" onclick="tabInicio()"><span class="ic">🏠</span>Início</button>
+  <button type="button" class="tab-btn" onclick="document.getElementById('search').scrollIntoView({behavior:'smooth'});document.getElementById('search').focus();"><span class="ic">🔎</span>Buscar</button>
+  <button type="button" class="tab-btn" id="tabCarrinho" onclick="openModal('cart')"><span class="ic">🛒</span>Carrinho<span class="tab-badge" id="tabCartBadge" style="display:none;">0</span></button>
+  <button type="button" class="tab-btn" onclick="openModal('info')"><span class="ic">ℹ️</span>Info</button>
+</nav>
+
+<!-- ═══ MODAL: CARRINHO ═══ -->
+<div class="modal-overlay" id="modal-cart" onclick="if(event.target===this) closeModal('cart')">
+  <div class="modal">
+    <div class="modal-header"><h3>🛒 Meu pedido</h3><button class="modal-close" onclick="closeModal('cart')">✕</button></div>
+    <div class="modal-body">
+      <div class="cart-items" id="cartItemsList"></div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-total-row"><span>Total</span><span id="cartTotalValue">R$0,00</span></div>
+      <button type="button" class="btn-primary" style="margin-top:0;" onclick="handleFinalizarPedido()">Finalizar pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: ADICIONAR BEBIDA ═══ -->
+<div class="modal-overlay" id="modal-add-drink" onclick="if(event.target===this) closeModal('add-drink')">
+  <div class="modal">
+    <div class="modal-header"><h3>🥤 Que tal uma bebida?</h3><button class="modal-close" onclick="closeModal('add-drink')">✕</button></div>
+    <div class="modal-body">
+      <p class="note">Vi que seu pedido ainda não tem bebida. Quer adicionar alguma?</p>
+      <button type="button" class="btn-primary" onclick="irParaBebidas()">Sim, quero adicionar</button>
+      <button type="button" class="btn-secondary" onclick="pularBebida()">Não, finalizar sem bebida</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: CHECKOUT ═══ -->
+<div class="modal-overlay" id="modal-checkout" onclick="if(event.target===this) closeModal('checkout')">
+  <div class="modal">
+    <div class="modal-header"><h3>📋 Finalizar pedido</h3><button class="modal-close" onclick="closeModal('checkout')">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">Seu nome</label>
+      <input class="field-input" id="chkNome" type="text" placeholder="Como podemos te chamar?" oninput="updateCheckoutBtn()"/>
+
+      <label class="field-label">Retirada ou entrega?</label>
+      <div class="chip-row">
+        <div class="chip selected" id="chipRetirada" onclick="setTipoEntrega('retirada')">🏃 Retirar no local</div>
+        <div class="chip" id="chipEntrega" onclick="setTipoEntrega('entrega')">🛵 Entrega</div>
+      </div>
+      <div id="taxaEntregaInfo" class="note" style="display:none;">🛵 Taxa de entrega: <b id="taxaEntregaValor">A combinar</b></div>
+      <div id="wrapEndereco" style="display:none;">
+        <label class="field-label">Endereço completo</label>
+        <textarea class="field-textarea" id="chkEndereco" placeholder="Rua, número, bairro, complemento" oninput="updateCheckoutBtn()"></textarea>
+      </div>
+
+      <label class="field-label">Forma de pagamento</label>
+      <div class="chip-row">
+        <div class="chip" data-pag="Dinheiro" onclick="setPagamento('Dinheiro', this)">💵 Dinheiro</div>
+        <div class="chip" data-pag="Cartão" onclick="setPagamento('Cartão', this)">💳 Cartão</div>
+        <div class="chip" data-pag="Pix" onclick="setPagamento('Pix', this)">💸 Pix</div>
+      </div>
+      <div id="wrapTroco" style="display:none;">
+        <label class="field-label">Troco para quanto?</label>
+        <input class="field-input" id="chkTroco" type="text" placeholder="Ex: 100,00 (ou deixa em branco se não precisar)"/>
+      </div>
+
+      <label class="field-label">Observações (opcional)</label>
+      <textarea class="field-textarea" id="chkObs" placeholder="Ex: caprichar no orégano, bem assada, etc."></textarea>
+
+      <div class="cart-total-row" style="margin-top:16px;"><span>Total</span><span id="checkoutTotalValue">R$0,00</span></div>
+      <button type="button" class="btn-primary" id="btnEnviarPedido" disabled onclick="finalizarPedido()">Enviar pedido pelo WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PERSONALIZAR ITEM ═══ -->
+<div class="modal-overlay" id="modal-customize" onclick="if(event.target===this) closeModal('customize')">
+  <div class="modal">
+    <div class="modal-header"><h3 id="custTitle">🍕 Personalizar</h3><button class="modal-close" onclick="closeModal('customize')">✕</button></div>
+    <div class="modal-body">
+      <div id="custIngWrap">
+        <label class="field-label">Quer tirar algum ingrediente?</label>
+        <div class="ing-row" id="custIngList"></div>
+        <p class="note">Toque em um ingrediente para removê-lo.</p>
+      </div>
+      <label class="field-label">Alguma observação?</label>
+      <textarea class="field-textarea" id="custObs" placeholder="Ex: sem cebola, bem assada, borda mais fina, etc."></textarea>
+      <button type="button" class="btn-primary" onclick="confirmCustomize()">Adicionar ao carrinho</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PIX ═══ -->
+<div class="modal-overlay" id="modal-pix" onclick="if(event.target===this) closeModal('pix')">
+  <div class="modal">
+    <div class="modal-header"><h3>💸 Pagar com Pix</h3><button class="modal-close" onclick="closeModal('pix')">✕</button></div>
+    <div class="modal-body">
+      <div class="pix-box">
+        <span style="font-size:0.86rem;color:var(--ink-soft);">Chave Pix</span>
+        <p style="margin:8px 0;font-weight:700;">A chave Pix é informada pela loja no atendimento.</p>
+      </div>
+      <p class="note">⚠️ Combine a chave Pix com a loja no WhatsApp e envie o comprovante junto com a confirmação do pedido.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: INFO ═══ -->
+<div class="modal-overlay" id="modal-info" onclick="if(event.target===this) closeModal('info')">
+  <div class="modal">
+    <div class="modal-header"><h3>ℹ️ Informações</h3><button class="modal-close" onclick="closeModal('info')">✕</button></div>
+    <div class="modal-body">
+      <div class="info-row"><span class="ic">🔥</span><div><div class="lbl">Especialidade</div><div class="val">Pizza no forno a lenha</div></div></div>
+      <div class="info-row"><span class="ic">🕐</span><div><div class="lbl">Horário</div><div class="val" id="infoHorario">A confirmar com a loja</div></div></div>
+      <div class="info-row"><span class="ic">📍</span><div><div class="lbl">Endereço</div><div class="val" id="infoEndereco">A confirmar com a loja</div></div></div>
+      <div class="info-row"><span class="ic">📞</span><div><div class="lbl">WhatsApp</div><div class="val" id="infoWhats">A confirmar com a loja</div></div></div>
+      <button type="button" class="btn-primary" onclick="openWhats()">💬 Chamar no WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ BELLA PIZZA — DEMO ESTÁTICO ═══════════════════════════════════════════
+     Demonstração / isca comercial (status pipeline). SEM Firebase e SEM área
+     administrativa nesta versão. O cardápio roda 100% no aparelho (dados fixos
+     + localStorage isolado com prefixo "bella_"). Isolamento total: as chaves
+     usam prefixo próprio da Bella e não colidem com nenhum outro cardápio
+     hospedado sob a mesma origem do GitHub Pages. -->
+<script>
+if("scrollRestoration" in history){ history.scrollRestoration = "manual"; }
+window.scrollTo(0, 0);
+window.addEventListener("pageshow", ()=> window.scrollTo(0, 0));
+
+// ─────────────────────────────────────────────────────────────
+// CONFIG — ÚNICO PONTO de contato/endereço/horário.
+// NOTA (demo): o WhatsApp abaixo é o número do João (Avanzia). Na Fase 2, se a
+// Bella fechar, trocar CONFIG.whats/telefoneFmt pelo número REAL da pizzaria.
+// Endereço e horário NÃO são inventados — ficam como placeholder até a loja confirmar.
+const CONFIG = {
+  whats: "5515998048078",
+  telefoneFmt: "A confirmar com a loja",   // colocar telefone real da Bella na Fase 2
+  horario: "A confirmar com a loja",
+  endereco: "A confirmar com a loja"
+};
+const WHATS = CONFIG.whats;
+function openWhats(){ window.open(`https://wa.me/${WHATS}`, "_blank", "noopener"); }
+
+// ─────────────────────────────────────────────────────────────
+// DADOS DO CARDÁPIO — itens/preços/ingredientes REAIS da Bella Pizza
+const DATA = [
+  { id:"pizzas-salgadas", name:"Pizzas Salgadas", icon:"🍕", note:"Assadas no forno a lenha. Todas com azeitona e orégano.", items:[
+    {name:"4 Queijos", desc:"Molho de tomate, mussarela, parmesão, gorgonzola, catupiry, azeitona e orégano", price:65},
+    {name:"A Moda", desc:"Molho de tomate, mussarela, frango, milho, ervilha, catupiry, azeitonas verdes e orégano", price:60},
+    {name:"Atum", desc:"Molho de tomate, mussarela, atum, ovo, cebola, azeitona e orégano", price:60},
+    {name:"Batata Louca", desc:"Molho de tomate, mussarela, batata frita, bacon, azeitona e orégano", price:65},
+    {name:"Brócolis", desc:"Molho de tomate, mussarela, brócolis, milho, bacon, azeitona e orégano", price:59},
+    {name:"Caipira", desc:"Molho de tomate, mussarela, frango, bacon, milho, azeitona e orégano", price:60},
+    {name:"Costela", desc:"Molho de tomate, mussarela, costela desfiada, tomate fatiado, cebola, azeitona e orégano", price:70},
+    {name:"3 Queijos", desc:"Molho de tomate, mussarela, parmesão, catupiry, azeitona e orégano", price:63},
+    {name:"Beirute de Peito de Peru", desc:"Mussarela, peito de peru, maionese, tomate fatiado e alface", price:55},
+    {name:"Calabresa", desc:"Molho de tomate, mussarela, calabresa, cebola, azeitona e orégano", price:60},
+    {name:"Frango com Catupiry", desc:"Molho de tomate, frango, catupiry, azeitona e orégano", price:60},
+    {name:"Lombo com Catupiry", desc:"Molho de tomate, mussarela, lombo canadense, catupiry, azeitona e orégano", price:60},
+    {name:"Franbacon", desc:"Molho de tomate, mussarela, frango, bacon, azeitona e orégano", price:63},
+    {name:"Marguerita", desc:"Molho de tomate, mussarela, tomate fatiado, manjericão, azeitona e orégano", price:58},
+    {name:"Milho", desc:"Molho de tomate, mussarela, milho, azeitona e orégano", price:55},
+    {name:"Mussarela", desc:"Molho de tomate, mussarela, azeitona e orégano", price:60},
+    {name:"Palmito", desc:"Molho de tomate, mussarela, palmito, azeitona e orégano", price:60},
+    {name:"Portuguesa", desc:"Molho de tomate, mussarela, presunto, ovo, milho, ervilha, cebola, azeitona e orégano", price:60}
+  ]},
+  { id:"pizzas-doces", name:"Pizzas Doces", icon:"🍫", note:"Feitas no forno a lenha para fechar com chave de ouro.", items:[
+    {name:"Prestígio", desc:"Creme de leite, leite condensado, chocolate ao leite e coco ralado", price:60},
+    {name:"Romeu e Julieta", desc:"Creme de leite, leite condensado, mussarela e goiabada", price:60},
+    {name:"Confete", desc:"Creme de leite, chocolate ao leite e confete", price:60},
+    {name:"Brigadeiro", desc:"Creme de leite, chocolate ao leite e granulado", price:60},
+    {name:"Banana com Canela", desc:"Creme de leite, banana, canela e leite condensado", price:58}
+  ]},
+  { id:"pasteis", name:"Pastéis", icon:"🥟", items:[
+    {name:"Pastel de 4 Queijos", desc:"Mussarela, presunto, parmesão, gorgonzola e catupiry", price:14},
+    {name:"Pastel de Brócolis, Bacon e Queijo", desc:"Brócolis refogado, bacon frito em cubos e mussarela", price:14},
+    {name:"Pastel de Calabresa", desc:"Linguiça calabresa fatiada ou moída e cebola", price:10},
+    {name:"Pastel de Calabresa com Queijo ou Catupiry", desc:"Linguiça calabresa, cebola e mussarela ou catupiry", price:12},
+    {name:"Pastel de Carne", desc:"Carne moída", price:10},
+    {name:"Pastel de Carne com Queijo", desc:"Carne moída e mussarela", price:12},
+    {name:"Pastel de Costela", desc:"Costela bovina desfiada e temperada", price:14}
+  ]},
+  { id:"esfihas", name:"Esfihas", icon:"🫓", note:"Esfihas abertas, feitas na hora.", items:[
+    {name:"Esfiha de Frango", desc:"Frango com catupiry ou mussarela", price:6},
+    {name:"Esfiha de Mussarela", desc:"", price:6},
+    {name:"Esfiha de Calabresa", desc:"Calabresa com catupiry ou mussarela", price:6},
+    {name:"Esfiha de Carne", desc:"", price:6},
+    {name:"Esfiha de Atum", desc:"", price:6},
+    {name:"Esfiha de Calabresa com Cebola", desc:"", price:6},
+    {name:"Esfiha de Pizza", desc:"", price:6},
+    {name:"Esfiha de Costela", desc:"", price:7},
+    {name:"Esfiha de Lombo com Catupiry", desc:"", price:7},
+    {name:"Esfiha 4 Queijos", desc:"", price:7},
+    {name:"Esfiha de Palmito", desc:"", price:7},
+    {name:"Esfiha de Brócolis com Bacon", desc:"", price:7}
+  ]},
+  { id:"esfihas-doces", name:"Esfihas Doces", icon:"🍯", items:[
+    {name:"Esfiha Prestígio", desc:"", price:6.5},
+    {name:"Esfiha Brigadeiro", desc:"", price:6.5},
+    {name:"Esfiha Confete", desc:"", price:6.5},
+    {name:"Esfiha Banana com Canela", desc:"", price:6.5}
+  ]},
+  { id:"bebidas", name:"Bebidas", icon:"🥤", items:[
+    {name:"Água Mineral 500ml", desc:"", price:4, sub:"Águas"},
+    {name:"Água Mineral com Gás 500ml", desc:"", price:5, sub:"Águas"},
+    {name:"Caipirinha de Cachaça 400ml", desc:"", price:12, sub:"Caipirinhas e Batidas"},
+    {name:"Caipirinha de Vodka 400ml", desc:"", price:15, sub:"Caipirinhas e Batidas"},
+    {name:"Espanhola 400ml", desc:"", price:18, sub:"Caipirinhas e Batidas"},
+    {name:"Coca-Cola 2L", desc:"", price:16, sub:"Refrigerantes"},
+    {name:"Coca-Cola Zero 2L", desc:"", price:16, sub:"Refrigerantes"},
+    {name:"Fanta Laranja 2L", desc:"", price:15, sub:"Refrigerantes"},
+    {name:"Fanta Uva 2L", desc:"", price:15, sub:"Refrigerantes"},
+    {name:"Coca-Cola Lata 350ml", desc:"", price:7, sub:"Refrigerantes"},
+    {name:"Coca-Cola Zero Lata 350ml", desc:"", price:7, sub:"Refrigerantes"},
+    {name:"Fanta Laranja Lata 350ml", desc:"", price:6, sub:"Refrigerantes"},
+    {name:"Fanta Uva Lata 350ml", desc:"", price:6, sub:"Refrigerantes"},
+    {name:"Guaraná Antártica Lata 350ml", desc:"", price:6, sub:"Refrigerantes"},
+    {name:"Guaraná Antártica Zero Lata 350ml", desc:"", price:6, sub:"Refrigerantes"},
+    {name:"Jarra de Suco de Laranja 1,5L", desc:"", price:32, sub:"Sucos"},
+    {name:"Copo de Suco de Laranja 400ml", desc:"", price:10, sub:"Sucos"}
+  ]},
+  { id:"porcoes", name:"Porções", icon:"🍟", items:[
+    {name:"Porção de Fritas 300g", desc:"", price:20},
+    {name:"Porção de Fritas com Cheddar e Bacon 300g", desc:"", price:30}
+  ]},
+  { id:"cervejas", name:"Cervejas", icon:"🍺", items:[
+    {name:"Cerveja Brahma Lata 350ml", desc:"", price:6},
+    {name:"Cerveja Original Long-Neck 300ml", desc:"", price:7},
+    {name:"Cerveja Skol Lata 350ml", desc:"", price:6},
+    {name:"Cerveja Heineken Long-Neck 330ml", desc:"", price:9},
+    {name:"Chopp RT166 — Caneca American Lager 400ml", desc:"", price:10}
+  ]}
+];
+
+// gera ids estáveis para cada item + índice de lookup p/ personalização
+const CUSTOMIZABLE_CATS = ["pizzas-salgadas","pizzas-doces","pasteis"];
+const ITEM_INDEX = {};
+DATA.forEach(cat=>{
+  cat.items.forEach((it,i)=>{
+    it.id = cat.id + "-" + i;
+    ITEM_INDEX[it.id] = {it, cat, size:null};
+    if(it.sizes) it.sizes.forEach((s,j)=>{
+      s.id = it.id + "-" + j;
+      ITEM_INDEX[s.id] = {it, cat, size:s};
+    });
+  });
+});
+
+function parseIngredientes(desc){
+  if(!desc) return [];
+  const idx = desc.lastIndexOf(" e ");
+  const normalized = idx === -1 ? desc : desc.slice(0, idx) + ", " + desc.slice(idx + 3);
+  return normalized.split(",").map(s=> s.trim()).filter(Boolean);
+}
+// bases/molhos — sem eles não dá pra montar o item, então não entram na lista de remoção
+const BASES_FIXAS = new Set(["molho de tomate","creme de leite","leite condensado","mussarela"]);
+function ingredientesRemoviveis(desc){
+  return parseIngredientes(desc).filter(ing=> !BASES_FIXAS.has(ing.toLowerCase()));
+}
+
+function money(n){ return "R$" + n.toFixed(2).replace(".", ","); }
+// Escapa saída dinâmica que vai para innerHTML (defesa contra XSS a partir de texto do usuário)
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+// ─────────────────────────────────────────────────────────────
+// ESTADO (persistido em localStorage com prefixo bella_)
+let _estado = { lojaAberta:true, promoModo:"off", promoTitulo:"Promoção da Casa", promoDesc:"Pergunta pra gente qual é a promoção de hoje." };
+let cart = [];
+// Identificador SINTÉTICO por linha do carrinho (nunca contém texto do usuário).
+// Segurança: os handlers onclick referenciam lineId, não o uid — o uid carrega
+// a observação livre do cliente e escapá-lo no atributo onclick NÃO protege
+// (o browser decodifica entidades antes de executar o JS). Desacoplar elimina
+// qualquer superfície de self-XSS a partir da observação.
+let _lineSeq = 0;
+
+function carregarEstado(){
+  try{ _estado = Object.assign(_estado, JSON.parse(localStorage.getItem("bella_estado") || "{}")); }catch(e){}
+  try{ cart = JSON.parse(localStorage.getItem("bella_cart") || "[]"); if(!Array.isArray(cart)) cart = []; }catch(e){ cart = []; }
+  // reatribui lineIds sintéticos após carregar (garante unicidade e nenhum resíduo)
+  cart.forEach((c,i)=>{ c.lineId = "l" + i; });
+  _lineSeq = cart.length;
+}
+function salvarCarrinho(){
+  try{ localStorage.setItem("bella_cart", JSON.stringify(cart)); }catch(e){}
+}
+
+// ─────────────────────────────────────────────────────────────
+// STATUS ABERTO/FECHADO (demo: controlado por _estado, padrão aberto)
+function renderStatus(){
+  const pill = document.getElementById("statusPill");
+  const text = document.getElementById("statusText");
+  const aberta = _estado.lojaAberta !== false;
+  pill.classList.toggle("closed", !aberta);
+  text.textContent = aberta ? "Aberto agora" : "Fechado no momento";
+}
+
+// ─────────────────────────────────────────────────────────────
+// PROMOÇÃO — desligada por padrão (promoModo "off")
+function renderPromo(){
+  const banner = document.getElementById("promoBanner");
+  const shouldShow = _estado.promoModo === "on";
+  document.getElementById("promoTitle").textContent = _estado.promoTitulo;
+  document.getElementById("promoDesc").textContent = _estado.promoDesc;
+  banner.classList.toggle("show", shouldShow);
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER DO CARDÁPIO
+const nav = document.getElementById("catNav");
+const menu = document.getElementById("menu");
+let activeCat = DATA[0].id;
+
+function itemRow(it, catId){
+  const tagHtml = it.tag ? `<span class="pill ${it.tag}">${it.tagLabel || (it.tag==="new"?"Novidade":"Destaque")}</span>` : "";
+  const customizable = CUSTOMIZABLE_CATS.includes(catId);
+  const leafIds = it.sizes ? it.sizes.map(s=>s.id) : [it.id];
+  let sideHtml;
+  if(it.sizes){
+    sideHtml = `<div class="size-rows">${it.sizes.map(s=>{
+      const p = s.price;
+      const action = customizable ? `openCustomize('${s.id}')` : `addToCart('${s.id}','${it.name.replace(/'/g,"\\'")}','${s.label}',${p})`;
+      return `<div class="size-row" data-leaf-id="${s.id}"><span class="lbl">${s.label}</span><span class="price">${money(p)}</span>
+        <button class="add-btn" onclick="${action}">+ Add</button></div>`;
+    }).join("")}</div>`;
+  } else {
+    const p = it.price;
+    const action = customizable ? `openCustomize('${it.id}')` : `addToCart('${it.id}','${it.name.replace(/'/g,"\\'")}','',${p})`;
+    sideHtml = `<div class="price">${money(p)}</div>
+      <button class="add-btn" onclick="${action}">+ Adicionar</button>`;
+  }
+  return `
+    <div class="item" data-name="${esc(it.name.toLowerCase())}" data-desc="${esc((it.desc||"").toLowerCase())}" data-leaf-ids="${leafIds.join(",")}">
+      <div class="item-main">
+        <div class="item-name-row"><span class="item-name">${esc(it.name)}</span>${tagHtml}</div>
+        ${it.desc ? `<div class="item-desc">${esc(it.desc)}</div>` : ""}
+      </div>
+      <div class="item-side">${sideHtml}</div>
+    </div>`;
+}
+
+function renderMenu(){
+  nav.innerHTML = "";
+  menu.innerHTML = "";
+  DATA.forEach(cat=>{
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerHTML = `<span class="cat-icon">${cat.icon}</span> ${cat.name}`;
+    btn.dataset.target = cat.id;
+    btn.onclick = ()=> setActiveCategory(cat.id);
+    nav.appendChild(btn);
+
+    const section = document.createElement("section");
+    section.className = "category";
+    section.id = cat.id;
+
+    const hasSub = cat.items.some(it=>it.sub);
+    let itemsHtml;
+    if(hasSub){
+      let html = ""; let currentSub = null; let openPanel = false;
+      cat.items.forEach(it=>{
+        if(it.sub !== currentSub){
+          if(openPanel) html += `</div>`;
+          html += `<div class="subhead">${esc(it.sub)}</div><div class="panel">`;
+          currentSub = it.sub; openPanel = true;
+        }
+        html += itemRow(it, cat.id);
+      });
+      if(openPanel) html += `</div>`;
+      itemsHtml = html;
+    } else {
+      itemsHtml = `<div class="panel">${cat.items.map(it=>itemRow(it, cat.id)).join("")}</div>`;
+    }
+
+    section.innerHTML = `
+      <div class="category-head"><h2>${cat.icon} ${cat.name}</h2><span class="count">${cat.items.length} ${cat.items.length===1?"item":"itens"}</span></div>
+      ${cat.note ? `<div class="category-note">${cat.note}</div>` : ""}
+      ${itemsHtml}`;
+    menu.appendChild(section);
+  });
+}
+
+function setActiveCategory(id){
+  activeCat = id;
+  document.querySelectorAll(".category").forEach(s=> s.classList.toggle("active", s.id === id));
+  document.querySelectorAll(".cat-nav button").forEach(b=> b.classList.toggle("active", b.dataset.target === id));
+  document.getElementById("search").value = "";
+  filterSearch("");
+  window.scrollTo({top: document.querySelector(".toolbar").offsetTop - 4, behavior:"smooth"});
+}
+
+// ─────────────────────────────────────────────────────────────
+// SUGESTÃO DE BEBIDA ANTES DE FINALIZAR
+function cartTemBebida(){
+  return cart.some(c=> c.id.startsWith("bebidas-") || c.id.startsWith("cervejas-"));
+}
+function handleFinalizarPedido(){
+  if(_estado.lojaAberta === false){ showToast("🔴 Estamos fechados no momento."); return; }
+  if(cartTemBebida()) openModal("checkout");
+  else openModal("add-drink");
+}
+function irParaBebidas(){
+  closeModal("add-drink");
+  closeModal("cart");
+  setActiveCategory("bebidas");
+}
+function pularBebida(){
+  closeModal("add-drink");
+  openModal("checkout");
+}
+
+// ─────────────────────────────────────────────────────────────
+// BUSCA
+function filterSearch(q){
+  q = q.trim().toLowerCase();
+  let anyVisible = false;
+  document.querySelectorAll(".category").forEach(sec=>{
+    if(!q){
+      sec.classList.toggle("active", sec.id === activeCat);
+      sec.querySelectorAll(".item").forEach(it=> it.style.display = "");
+      return;
+    }
+    const items = [...sec.querySelectorAll(".item")];
+    let hasMatch = false;
+    items.forEach(it=>{
+      const match = it.dataset.name.includes(q) || it.dataset.desc.includes(q);
+      it.style.display = match ? "" : "none";
+      if(match) hasMatch = true;
+    });
+    sec.classList.toggle("active", hasMatch);
+    if(hasMatch) anyVisible = true;
+  });
+  document.getElementById("emptyState").style.display = (q && !anyVisible) ? "block" : "none";
+  document.querySelectorAll(".cat-nav button").forEach(b=> b.classList.toggle("active", !q && b.dataset.target === activeCat));
+}
+document.getElementById("search").addEventListener("input", (e)=> filterSearch(e.target.value));
+
+// ─────────────────────────────────────────────────────────────
+// CARRINHO
+function addToCart(id, name, sizeLabel, price){
+  addToCartCustom(id, name, sizeLabel, price, [], "");
+}
+function addToCartCustom(id, name, sizeLabel, price, removed, obs){
+  removed = removed || [];
+  obs = (obs || "").trim();
+  const uid = [id, sizeLabel, removed.join("|"), obs].join("::");
+  const existing = cart.find(c=> c.uid === uid);
+  if(existing){ existing.qty++; }
+  else{ cart.push({uid, lineId:"l"+(_lineSeq++), id, name, sizeLabel, price, qty:1, removed, obs}); }
+  updateCartUI();
+  pulseCartFab();
+  showToast(`${name}${sizeLabel?" ("+sizeLabel+")":""} adicionado! 🛒`);
+}
+function changeQty(lineId, delta){
+  const line = cart.find(c=> c.lineId === lineId);
+  if(!line) return;
+  line.qty += delta;
+  if(line.qty <= 0) cart = cart.filter(c=> c.lineId !== lineId);
+  updateCartUI();
+}
+function removeLine(lineId){
+  cart = cart.filter(c=> c.lineId !== lineId);
+  updateCartUI();
+}
+
+// ─────────────────────────────────────────────────────────────
+// PERSONALIZAÇÃO (remover ingredientes + observação) — pizzas e pastéis
+let _custCtx = null;
+let _custRemovidos = [];
+function openCustomize(id){
+  const entry = ITEM_INDEX[id];
+  if(!entry) return;
+  const {it, size} = entry;
+  const price = size ? size.price : it.price;
+  _custCtx = {id, name: it.name, sizeLabel: size ? size.label : "", price};
+  _custRemovidos = [];
+  document.getElementById("custTitle").textContent = `🍕 ${it.name}${size ? " — " + size.label : ""}`;
+  const ingredientes = ingredientesRemoviveis(it.desc);
+  const wrap = document.getElementById("custIngWrap");
+  const list = document.getElementById("custIngList");
+  if(ingredientes.length){
+    wrap.style.display = "block";
+    list.innerHTML = ingredientes.map(ing=> `<span class="ing-chip" data-ing="${esc(ing)}" onclick="toggleIngrediente(this)">${esc(ing)}</span>`).join("");
+  } else {
+    wrap.style.display = "none";
+    list.innerHTML = "";
+  }
+  document.getElementById("custObs").value = "";
+  openModal("customize");
+}
+function toggleIngrediente(el){
+  const ing = el.dataset.ing;
+  el.classList.toggle("removed");
+  if(el.classList.contains("removed")) _custRemovidos.push(ing);
+  else _custRemovidos = _custRemovidos.filter(i=> i !== ing);
+}
+function confirmCustomize(){
+  if(!_custCtx) return;
+  const obs = document.getElementById("custObs").value.trim();
+  addToCartCustom(_custCtx.id, _custCtx.name, _custCtx.sizeLabel, _custCtx.price, [..._custRemovidos], obs);
+  closeModal("customize");
+}
+
+function cartTotal(){ return cart.reduce((s,c)=> s + c.price * c.qty, 0); }
+function cartCount(){ return cart.reduce((s,c)=> s + c.qty, 0); }
+
+function updateCartUI(){
+  const count = cartCount();
+  const total = cartTotal();
+  const fab = document.getElementById("cartFab");
+  fab.classList.toggle("show", count > 0);
+  document.getElementById("cartFabLabel").textContent = `🛒 ${count} ${count===1?"item":"itens"}`;
+  document.getElementById("cartFabTotal").textContent = money(total);
+  const badge = document.getElementById("tabCartBadge");
+  badge.style.display = count > 0 ? "flex" : "none";
+  badge.textContent = count;
+
+  const list = document.getElementById("cartItemsList");
+  const footer = document.getElementById("cartFooter");
+  if(cart.length === 0){
+    list.innerHTML = `<div class="cart-empty"><span class="ic">🛒</span>Seu carrinho está vazio.</div>`;
+    footer.style.display = "none";
+  } else {
+    list.innerHTML = cart.map(c=> `
+      <div class="cart-line">
+        <div>
+          <div class="cart-line-name">${esc(c.name)}${c.sizeLabel?` — ${esc(c.sizeLabel)}`:""}</div>
+          <div class="cart-line-detail">${money(c.price)} cada</div>
+          ${c.removed && c.removed.length ? `<div class="cart-line-custom removed">Sem: ${esc(c.removed.join(", "))}</div>` : ""}
+          ${c.obs ? `<div class="cart-line-custom">Obs: ${esc(c.obs)}</div>` : ""}
+          <button class="cart-line-remove" onclick="removeLine('${c.uid}')">🗑 remover</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="cart-line-price">${money(c.price * c.qty)}</div>
+          <div class="cart-line-controls">
+            <button class="qty-btn" onclick="changeQty('${c.uid}',-1)">−</button>
+            <span>${c.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${c.uid}',1)">+</button>
+          </div>
+        </div>
+      </div>`).join("");
+    footer.style.display = "block";
+  }
+  document.getElementById("cartTotalValue").textContent = money(total);
+  salvarCarrinho();
+  // se o checkout estiver aberto e o carrinho mudar, revalida o botão de enviar
+  if(document.getElementById("modal-checkout").classList.contains("open")) updateCheckoutBtn();
+}
+function pulseCartFab(){
+  const fab = document.getElementById("cartFab");
+  fab.classList.remove("pulse");
+  void fab.offsetWidth;
+  fab.classList.add("pulse");
+}
+
+// ─────────────────────────────────────────────────────────────
+// CHECKOUT
+let _tipoEntrega = "retirada";
+let _pagamento = null;
+
+function checkoutTotal(){ return cartTotal(); }
+function updateTaxaEntregaInfo(){
+  document.getElementById("taxaEntregaInfo").style.display = _tipoEntrega === "entrega" ? "block" : "none";
+  document.getElementById("checkoutTotalValue").textContent = money(checkoutTotal());
+}
+function setTipoEntrega(tipo){
+  _tipoEntrega = tipo;
+  document.getElementById("chipRetirada").classList.toggle("selected", tipo==="retirada");
+  document.getElementById("chipEntrega").classList.toggle("selected", tipo==="entrega");
+  document.getElementById("wrapEndereco").style.display = tipo==="entrega" ? "block" : "none";
+  updateTaxaEntregaInfo();
+  updateCheckoutBtn();
+}
+function setPagamento(pag, el){
+  _pagamento = pag;
+  document.querySelectorAll("#modal-checkout [data-pag]").forEach(c=> c.classList.toggle("selected", c===el));
+  document.getElementById("wrapTroco").style.display = pag==="Dinheiro" ? "block" : "none";
+  if(pag === "Pix") openModal("pix");
+  updateCheckoutBtn();
+}
+function updateCheckoutBtn(){
+  const nome = document.getElementById("chkNome").value.trim();
+  const endOk = _tipoEntrega === "retirada" || document.getElementById("chkEndereco").value.trim().length > 0;
+  document.getElementById("btnEnviarPedido").disabled = !(nome.length > 0 && endOk && _pagamento && cart.length > 0);
+  updateTaxaEntregaInfo();
+}
+
+function resetCheckout(){
+  _tipoEntrega = "retirada";
+  _pagamento = null;
+  ["chkNome","chkEndereco","chkTroco","chkObs"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+  document.querySelectorAll("#modal-checkout [data-pag]").forEach(c=> c.classList.remove("selected"));
+  document.getElementById("wrapTroco").style.display = "none";
+  setTipoEntrega("retirada");
+}
+
+function finalizarPedido(){
+  if(_estado.lojaAberta === false){ showToast("🔴 Estamos fechados no momento."); return; }
+  if(!cart.length){ showToast("Seu carrinho está vazio."); return; }
+  const nome = document.getElementById("chkNome").value.trim();
+  const endereco = document.getElementById("chkEndereco").value.trim();
+  const troco = document.getElementById("chkTroco").value.trim();
+  const obs = document.getElementById("chkObs").value.trim();
+
+  let msg = `🍕 *PEDIDO — BELLA PIZZA*\n\n`;
+  msg += `👤 *${nome}*\n\n`;
+  cart.forEach(c=>{
+    msg += `${c.qty}x ${c.name}${c.sizeLabel?` (${c.sizeLabel})`:""} — ${money(c.price*c.qty)}\n`;
+    if(c.removed && c.removed.length) msg += `   _sem: ${c.removed.join(", ")}_\n`;
+    if(c.obs) msg += `   _obs: ${c.obs}_\n`;
+  });
+  msg += `\n💰 *Total: ${money(cartTotal())}*\n\n`;
+  msg += _tipoEntrega === "entrega" ? `🛵 *ENTREGA*\n${endereco}\n_(taxa de entrega a combinar com a loja)_\n\n` : `🏃 *RETIRADA NO LOCAL*\n\n`;
+  msg += `💳 *Pagamento:* ${_pagamento}${_pagamento==="Dinheiro" && troco ? ` (troco para ${troco})` : ""}\n`;
+  if(obs) msg += `\n📝 *Obs:* ${obs}\n`;
+
+  window.open(`https://wa.me/${WHATS}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  closeModal("checkout");
+  closeModal("cart");
+  cart = [];
+  updateCartUI();
+  resetCheckout();
+  showToast("Pedido enviado! 🎉");
+}
+
+// ─────────────────────────────────────────────────────────────
+// MODAIS GENÉRICOS
+function openModal(id){
+  document.getElementById("modal-" + id).classList.add("open");
+  document.body.style.overflow = "hidden";
+  if(id === "checkout") updateCheckoutBtn();
+}
+function closeModal(id){
+  document.getElementById("modal-" + id).classList.remove("open");
+  // só libera o scroll do body se nenhum outro modal continuar aberto (modais empilham: carrinho→checkout→pix)
+  if(!document.querySelector(".modal-overlay.open")) document.body.style.overflow = "";
+}
+
+// ─────────────────────────────────────────────────────────────
+// TABBAR
+function tabInicio(){
+  document.querySelectorAll(".tab-btn").forEach(b=> b.classList.remove("active"));
+  document.getElementById("tabInicio").classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+// ─────────────────────────────────────────────────────────────
+// TOAST
+let _toastTimer;
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=> t.classList.remove("show"), 2200);
+}
+
+// ─────────────────────────────────────────────────────────────
+// APLICA CONFIG (contato/endereço/horário — ponto único)
+function aplicarConfig(){
+  document.getElementById("infoHorario").textContent = CONFIG.horario;
+  document.getElementById("infoEndereco").textContent = CONFIG.endereco;
+  document.getElementById("infoWhats").textContent = CONFIG.telefoneFmt;
+  document.getElementById("footerWhats").href = `https://wa.me/${WHATS}`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+carregarEstado();
+aplicarConfig();
+renderStatus();
+renderPromo();
+renderMenu();
+setActiveCategory(activeCat);
+updateCartUI();
+</script>
+</body>
+</html>
