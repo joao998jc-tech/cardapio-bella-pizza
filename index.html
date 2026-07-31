@@ -276,6 +276,26 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+  /* ADMIN (painel do lojista) — mesma mecânica do molde, cores da marca Bella */
+  #heroBadge{cursor:default;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+  .switch-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);}
+  .switch-row:first-child{border-top:none;}
+  .switch{position:relative;width:42px;height:24px;flex:none;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .slider{position:absolute;inset:0;background:var(--line);border-radius:20px;cursor:pointer;transition:.2s;}
+  .switch .slider::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+  .switch input:checked + .slider{background:var(--green);}
+  .switch input:checked + .slider::before{transform:translateX(18px);}
+  .admin-group-title{font-size:0.82rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:var(--orange);margin:16px 0 4px;}
+  .admin-group-title:first-child{margin-top:0;}
+  .admin-price-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+  .admin-price-row:first-child{border-top:none;}
+  .admin-price-row .nm{font-size:0.92rem;flex:1;}
+  .admin-price-row input[type="number"]{width:88px;text-align:right;border:1px solid var(--line);border-radius:7px;padding:9px 10px;font-size:0.92rem;background:var(--paper);color:var(--char);}
+  .leaf-esgotado{opacity:0.45;filter:grayscale(60%);}
+  .leaf-esgotado .add-btn{pointer-events:none;}
+  .item-disponibilidade{}
+
   /* RESPONSIVIDADE REFORÇADA — telas pequenas */
   @media (max-width:520px){
     html{font-size:16.5px;}
@@ -306,7 +326,7 @@
 <!-- ═══ HERO ═══ -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="badge"><img src="LOGO.png" alt="Logo Bella Pizza - Forno a lenha" width="120" height="120"></div>
+    <div class="badge" id="heroBadge"><img src="LOGO.png" alt="Logo Bella Pizza - Forno a lenha" width="120" height="120" draggable="false"></div>
     <div class="hero-text">
       <h1 class="display">Bella Pizza</h1>
       <p class="sub">O verdadeiro sabor da pizza feita no forno a lenha</p>
@@ -476,14 +496,67 @@
   </div>
 </div>
 
+<!-- ═══ MODAL: ADMIN LOGIN ═══ -->
+<div class="modal-overlay" id="modal-admin-login" onclick="if(event.target===this) closeModal('admin-login')">
+  <div class="modal">
+    <div class="modal-header"><h3>🔒 Área do lojista</h3><button class="modal-close" onclick="closeModal('admin-login')">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">Senha</label>
+      <input class="field-input" id="adminSenha" type="password" placeholder="Digite a senha" onkeydown="if(event.key==='Enter')tentarLoginAdmin()"/>
+      <button type="button" class="btn-primary" onclick="tentarLoginAdmin()">Entrar</button>
+      <p class="note">Senha de acesso ao painel administrativo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: ADMIN PAINEL ═══ -->
+<div class="modal-overlay" id="modal-admin-painel" onclick="if(event.target===this) closeModal('admin-painel')">
+  <div class="modal">
+    <div class="modal-header"><h3>⚙️ Painel do lojista</h3><button class="modal-close" onclick="closeModal('admin-painel')">✕</button></div>
+    <div class="modal-body">
+
+      <div class="admin-group-title">Status da loja</div>
+      <div class="switch-row">
+        <span id="adminAbertaLabel">Loja aberta agora</span>
+        <label class="switch"><input type="checkbox" id="adminAberta" onchange="toggleLoja()"><span class="slider"></span></label>
+      </div>
+      <p class="note" style="margin-top:2px;">Ligue para <b>Abrir</b> e desligue para <b>Fechar</b> a loja. Muda na hora no aparelho.</p>
+      <input class="field-input" id="adminPausaMsg" placeholder="Mensagem quando fechado (ex: Voltamos às 18h)" oninput="salvarEstado()" style="margin-top:8px;"/>
+
+      <div class="admin-group-title">Taxa de entrega</div>
+      <input class="field-input" id="adminTaxaEntrega" type="number" step="0.01" min="0" placeholder="Ex: 6,00 (deixe 0 para 'a combinar')" oninput="salvarEstado()"/>
+      <p class="note">Valor mostrado ao cliente quando ele escolhe "Entrega". Deixe 0 para exibir "A combinar".</p>
+
+      <div class="admin-group-title">Promoção</div>
+      <div class="chip-row">
+        <div class="chip" id="promoModoOn" onclick="setPromoModo('on')">Exibir promoção</div>
+        <div class="chip" id="promoModoOff" onclick="setPromoModo('off')">Ocultar</div>
+      </div>
+      <label class="field-label">Título da promoção</label>
+      <input class="field-input" id="adminPromoTitulo" oninput="salvarEstado()"/>
+      <label class="field-label">Descrição</label>
+      <input class="field-input" id="adminPromoDesc" oninput="salvarEstado()"/>
+
+      <div class="admin-group-title">Editar preços</div>
+      <div id="adminPrecosList"></div>
+
+      <button type="button" class="btn-secondary" onclick="adicionarItemAdmin()">➕ Adicionar novo item</button>
+      <button type="button" class="btn-secondary" onclick="sairAdmin()">Sair do modo lojista</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ═══ BELLA PIZZA — DEMO ESTÁTICO ═══════════════════════════════════════════
-     Demonstração / isca comercial (status pipeline). SEM Firebase e SEM área
-     administrativa nesta versão. O cardápio roda 100% no aparelho (dados fixos
-     + localStorage isolado com prefixo "bella_"). Isolamento total: as chaves
-     usam prefixo próprio da Bella e não colidem com nenhum outro cardápio
-     hospedado sob a mesma origem do GitHub Pages. -->
+     Demonstração / isca comercial (status pipeline). SEM Firebase (front-only):
+     o cardápio roda 100% no aparelho (dados fixos + localStorage isolado com
+     prefixo "bella_"). Tem PAINEL DO LOJISTA (admin) igual ao molde, aberto por
+     long-press (segurar) na LOGO.png do hero → senha. Toda edição do painel
+     (status, taxa, promoção, preços, esgotado, disponibilidade, novos itens)
+     persiste apenas neste aparelho, nas chaves bella_*. Isolamento total: as
+     chaves usam prefixo próprio da Bella e não colidem com nenhum outro
+     cardápio hospedado sob a mesma origem do GitHub Pages. -->
 <script>
 if("scrollRestoration" in history){ history.scrollRestoration = "manual"; }
 window.scrollTo(0, 0);
@@ -625,7 +698,16 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, m=>({"&":"&amp;
 
 // ─────────────────────────────────────────────────────────────
 // ESTADO (persistido em localStorage com prefixo bella_)
-let _estado = { lojaAberta:true, promoModo:"off", promoTitulo:"Promoção da Casa", promoDesc:"Pergunta pra gente qual é a promoção de hoje." };
+let _estado = { lojaAberta:true, pausaMsg:"", promoModo:"off", promoTitulo:"Promoção da Casa", promoDesc:"Pergunta pra gente qual é a promoção de hoje.", taxaEntrega:0 };
+// Estado do painel do lojista (persistido em localStorage com prefixo bella_)
+let _precosCustom = {};          // { leafId|itemId: preço }
+let _esgotados = [];             // [leafId|itemId]
+let _disponibilidades = {};      // { leafId|itemId: texto }
+let _itensCustomPorCategoria = {}; // { catId: [item,...] }
+let _modoAdmin = false;
+// Senha do painel administrativo (mesma do molde). Front-only: sem backend, o
+// acesso real ao painel depende do gesto de long-press na logo + esta senha.
+const ADMIN_SENHA = "1234";
 let cart = [];
 // Identificador SINTÉTICO por linha do carrinho (nunca contém texto do usuário).
 // Segurança: os handlers onclick referenciam lineId, não o uid — o uid carrega
@@ -636,6 +718,10 @@ let _lineSeq = 0;
 
 function carregarEstado(){
   try{ _estado = Object.assign(_estado, JSON.parse(localStorage.getItem("bella_estado") || "{}")); }catch(e){}
+  try{ _precosCustom = JSON.parse(localStorage.getItem("bella_precos") || "{}"); }catch(e){ _precosCustom = {}; }
+  try{ _esgotados = JSON.parse(localStorage.getItem("bella_esgotados") || "[]"); if(!Array.isArray(_esgotados)) _esgotados = []; }catch(e){ _esgotados = []; }
+  try{ _disponibilidades = JSON.parse(localStorage.getItem("bella_disponibilidades") || "{}"); }catch(e){ _disponibilidades = {}; }
+  try{ _itensCustomPorCategoria = JSON.parse(localStorage.getItem("bella_itensCustom") || "{}"); }catch(e){ _itensCustomPorCategoria = {}; }
   try{ cart = JSON.parse(localStorage.getItem("bella_cart") || "[]"); if(!Array.isArray(cart)) cart = []; }catch(e){ cart = []; }
   // reatribui lineIds sintéticos após carregar (garante unicidade e nenhum resíduo)
   cart.forEach((c,i)=>{ c.lineId = "l" + i; });
@@ -643,6 +729,30 @@ function carregarEstado(){
 }
 function salvarCarrinho(){
   try{ localStorage.setItem("bella_cart", JSON.stringify(cart)); }catch(e){}
+}
+// Persiste todo o estado do painel do lojista (localStorage bella_ — sem backend)
+function salvarEstado(){
+  const pausaEl = document.getElementById("adminPausaMsg");
+  const promoTituloEl = document.getElementById("adminPromoTitulo");
+  const promoDescEl = document.getElementById("adminPromoDesc");
+  const taxaEl = document.getElementById("adminTaxaEntrega");
+  if(pausaEl) _estado.pausaMsg = pausaEl.value;
+  if(promoTituloEl) _estado.promoTitulo = promoTituloEl.value || "Promoção da Casa";
+  if(promoDescEl) _estado.promoDesc = promoDescEl.value || "";
+  if(taxaEl){ const taxa = parseFloat(taxaEl.value); _estado.taxaEntrega = isNaN(taxa) || taxa < 0 ? 0 : taxa; }
+  try{
+    localStorage.setItem("bella_estado", JSON.stringify(_estado));
+    localStorage.setItem("bella_precos", JSON.stringify(_precosCustom));
+    localStorage.setItem("bella_esgotados", JSON.stringify(_esgotados));
+    localStorage.setItem("bella_disponibilidades", JSON.stringify(_disponibilidades));
+    localStorage.setItem("bella_itensCustom", JSON.stringify(_itensCustomPorCategoria));
+  }catch(e){}
+  renderStatus();
+  renderPromo();
+  updateTaxaEntregaInfo();
+}
+function precoAtual(id, precoBase){
+  return _precosCustom[id] !== undefined ? _precosCustom[id] : precoBase;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -652,7 +762,7 @@ function renderStatus(){
   const text = document.getElementById("statusText");
   const aberta = _estado.lojaAberta !== false;
   pill.classList.toggle("closed", !aberta);
-  text.textContent = aberta ? "Aberto agora" : "Fechado no momento";
+  text.textContent = aberta ? "Aberto agora" : (_estado.pausaMsg ? _estado.pausaMsg : "Fechado no momento");
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -678,13 +788,13 @@ function itemRow(it, catId){
   let sideHtml;
   if(it.sizes){
     sideHtml = `<div class="size-rows">${it.sizes.map(s=>{
-      const p = s.price;
+      const p = precoAtual(s.id, s.price);
       const action = customizable ? `openCustomize('${s.id}')` : `addToCart('${s.id}','${it.name.replace(/'/g,"\\'")}','${s.label}',${p})`;
       return `<div class="size-row" data-leaf-id="${s.id}"><span class="lbl">${s.label}</span><span class="price">${money(p)}</span>
         <button class="add-btn" onclick="${action}">+ Add</button></div>`;
     }).join("")}</div>`;
   } else {
-    const p = it.price;
+    const p = precoAtual(it.id, it.price);
     const action = customizable ? `openCustomize('${it.id}')` : `addToCart('${it.id}','${it.name.replace(/'/g,"\\'")}','',${p})`;
     sideHtml = `<div class="price">${money(p)}</div>
       <button class="add-btn" onclick="${action}">+ Adicionar</button>`;
@@ -694,6 +804,7 @@ function itemRow(it, catId){
       <div class="item-main">
         <div class="item-name-row"><span class="item-name">${esc(it.name)}</span>${tagHtml}</div>
         ${it.desc ? `<div class="item-desc">${esc(it.desc)}</div>` : ""}
+        <div class="item-disponibilidade" style="display:none;font-size:0.76rem;font-weight:700;color:var(--orange);margin-top:4px;"></div>
       </div>
       <div class="item-side">${sideHtml}</div>
     </div>`;
@@ -918,10 +1029,16 @@ function pulseCartFab(){
 let _tipoEntrega = "retirada";
 let _pagamento = null;
 
-function checkoutTotal(){ return cartTotal(); }
+function taxaEntregaAtual(){ return _estado.taxaEntrega || 0; }
+function checkoutTotal(){ return cartTotal() + (_tipoEntrega === "entrega" ? taxaEntregaAtual() : 0); }
 function updateTaxaEntregaInfo(){
-  document.getElementById("taxaEntregaInfo").style.display = _tipoEntrega === "entrega" ? "block" : "none";
-  document.getElementById("checkoutTotalValue").textContent = money(checkoutTotal());
+  const taxa = taxaEntregaAtual();
+  const valEl = document.getElementById("taxaEntregaValor");
+  if(valEl) valEl.textContent = taxa > 0 ? money(taxa) : "A combinar";
+  const infoEl = document.getElementById("taxaEntregaInfo");
+  if(infoEl) infoEl.style.display = _tipoEntrega === "entrega" ? "block" : "none";
+  const totEl = document.getElementById("checkoutTotalValue");
+  if(totEl) totEl.textContent = money(checkoutTotal());
 }
 function setTipoEntrega(tipo){
   _tipoEntrega = tipo;
@@ -969,8 +1086,14 @@ function finalizarPedido(){
     if(c.removed && c.removed.length) msg += `   _sem: ${c.removed.join(", ")}_\n`;
     if(c.obs) msg += `   _obs: ${c.obs}_\n`;
   });
-  msg += `\n💰 *Total: ${money(cartTotal())}*\n\n`;
-  msg += _tipoEntrega === "entrega" ? `🛵 *ENTREGA*\n${endereco}\n_(taxa de entrega a combinar com a loja)_\n\n` : `🏃 *RETIRADA NO LOCAL*\n\n`;
+  const taxa = _tipoEntrega === "entrega" ? taxaEntregaAtual() : 0;
+  msg += `\n💰 *Total: ${money(cartTotal() + taxa)}*\n\n`;
+  if(_tipoEntrega === "entrega"){
+    const taxaTxt = taxa > 0 ? `_(inclui taxa de entrega de ${money(taxa)})_` : `_(taxa de entrega a combinar com a loja)_`;
+    msg += `🛵 *ENTREGA*\n${endereco}\n${taxaTxt}\n\n`;
+  } else {
+    msg += `🏃 *RETIRADA NO LOCAL*\n\n`;
+  }
   msg += `💳 *Pagamento:* ${_pagamento}${_pagamento==="Dinheiro" && troco ? ` (troco para ${troco})` : ""}\n`;
   if(obs) msg += `\n📝 *Obs:* ${obs}\n`;
 
@@ -1025,6 +1148,215 @@ function aplicarConfig(){
 }
 
 // ─────────────────────────────────────────────────────────────
+// PAINEL DO LOJISTA (admin) — mesma mecânica do molde, front-only (localStorage bella_, sem backend)
+function aplicarItensCustom(){
+  Object.keys(_itensCustomPorCategoria).forEach(catId=>{
+    const cat = DATA.find(c=>c.id===catId);
+    const section = document.getElementById(catId);
+    if(!cat || !section) return;
+    (_itensCustomPorCategoria[catId]||[]).forEach(item=>{
+      if(cat.items.some(it=>it.id===item.id)) return; // já aplicado
+      cat.items.push(item);
+      const panel = section.querySelector(".panel:last-of-type") || section;
+      panel.insertAdjacentHTML("beforeend", itemRow(item, catId));
+    });
+    const countEl = section.querySelector(".count");
+    if(countEl) countEl.textContent = `${cat.items.length} ${cat.items.length===1?"item":"itens"}`;
+  });
+}
+function aplicarEsgotadosEDisponibilidades(){
+  const esgSet = new Set(_esgotados);
+  document.querySelectorAll("[data-leaf-id]").forEach(row=>{
+    const id = row.dataset.leafId;
+    const esgotado = esgSet.has(id);
+    row.classList.toggle("leaf-esgotado", esgotado);
+    const btn = row.querySelector(".add-btn");
+    if(btn) btn.disabled = esgotado;
+  });
+  document.querySelectorAll(".item").forEach(itemEl=>{
+    const ids = (itemEl.dataset.leafIds||"").split(",");
+    const btn = itemEl.querySelector(".item-side > .add-btn");
+    if(btn){
+      const esgotado = ids.length===1 && esgSet.has(ids[0]);
+      btn.disabled = esgotado;
+      itemEl.classList.toggle("leaf-esgotado", esgotado);
+    }
+    const textos = ids.map(id=>_disponibilidades[id]).filter(Boolean);
+    const dispEl = itemEl.querySelector(".item-disponibilidade");
+    if(dispEl){
+      if(textos.length){ dispEl.textContent = "🗓️ " + textos[0]; dispEl.style.display = "block"; }
+      else { dispEl.style.display = "none"; }
+    }
+  });
+}
+// re-renderiza só as seções do menu (preços/botões) sem perder a categoria ativa nem tocar na nav
+function rerenderMenuPrices(){
+  const prevActive = activeCat;
+  menu.innerHTML = "";
+  DATA.forEach(cat=>{
+    const section = document.createElement("section");
+    section.className = "category" + (cat.id === prevActive ? " active" : "");
+    section.id = cat.id;
+    const hasSub = cat.items.some(it=>it.sub);
+    let itemsHtml;
+    if(hasSub){
+      let html = ""; let currentSub = null; let openPanel = false;
+      cat.items.forEach(it=>{
+        if(it.sub !== currentSub){
+          if(openPanel) html += `</div>`;
+          html += `<div class="subhead">${esc(it.sub)}</div><div class="panel">`;
+          currentSub = it.sub; openPanel = true;
+        }
+        html += itemRow(it, cat.id);
+      });
+      if(openPanel) html += `</div>`;
+      itemsHtml = html;
+    } else {
+      itemsHtml = `<div class="panel">${cat.items.map(it=>itemRow(it, cat.id)).join("")}</div>`;
+    }
+    section.innerHTML = `
+      <div class="category-head"><h2>${cat.icon} ${cat.name}</h2><span class="count">${cat.items.length} ${cat.items.length===1?"item":"itens"}</span></div>
+      ${cat.note ? `<div class="category-note">${cat.note}</div>` : ""}
+      ${itemsHtml}`;
+    menu.appendChild(section);
+  });
+  aplicarEsgotadosEDisponibilidades();
+}
+
+function openAdminLogin(){ openModal("admin-login"); }
+function tentarLoginAdmin(){
+  const senha = document.getElementById("adminSenha").value;
+  if(senha === ADMIN_SENHA){
+    closeModal("admin-login");
+    document.getElementById("adminSenha").value = "";
+    _modoAdmin = true;
+    abrirPainelAdmin();
+  } else {
+    showToast("Senha incorreta.");
+  }
+}
+function sairAdmin(){
+  _modoAdmin = false;
+  closeModal("admin-painel");
+  showToast("Saiu do modo lojista.");
+}
+function abrirPainelAdmin(){
+  const aberta = _estado.lojaAberta !== false;
+  document.getElementById("adminAberta").checked = aberta;
+  const lbl = document.getElementById("adminAbertaLabel");
+  if(lbl) lbl.textContent = aberta ? "Loja aberta agora" : "Loja fechada agora";
+  document.getElementById("adminPausaMsg").value = _estado.pausaMsg || "";
+  document.getElementById("adminTaxaEntrega").value = _estado.taxaEntrega || 0;
+  document.getElementById("adminPromoTitulo").value = _estado.promoTitulo || "";
+  document.getElementById("adminPromoDesc").value = _estado.promoDesc || "";
+  setPromoModo(_estado.promoModo, true);
+
+  const list = document.getElementById("adminPrecosList");
+  let html = "";
+  DATA.forEach(cat=>{
+    html += `<div class="admin-group-title">${cat.icon} ${esc(cat.name)}</div>`;
+    cat.items.forEach(it=>{
+      if(it.sizes){
+        it.sizes.forEach(s=>{
+          const p = precoAtual(s.id, s.price);
+          html += `<div class="admin-price-row"><span class="nm">${esc(it.name)} — ${esc(s.label)}</span>
+            <input type="number" step="0.01" value="${p}" onchange="alterarPreco('${s.id}', this.value)"/>
+            <label style="display:flex;align-items:center;gap:4px;font-size:0.72rem;"><input type="checkbox" ${_esgotados.includes(s.id)?"checked":""} onchange="toggleEsgotadoAdmin('${s.id}', this.checked)"/>Esgotado</label></div>
+            <div class="admin-price-row"><input class="field-input" placeholder="Disponibilidade (ex: só fim de semana)" value="${esc(_disponibilidades[s.id]||"")}" onchange="alterarDisponibilidade('${s.id}', this.value)" style="flex:1;"/></div>`;
+        });
+      } else {
+        const p = precoAtual(it.id, it.price);
+        html += `<div class="admin-price-row"><span class="nm">${esc(it.name)}</span>
+          <input type="number" step="0.01" value="${p}" onchange="alterarPreco('${it.id}', this.value)"/>
+          <label style="display:flex;align-items:center;gap:4px;font-size:0.72rem;"><input type="checkbox" ${_esgotados.includes(it.id)?"checked":""} onchange="toggleEsgotadoAdmin('${it.id}', this.checked)"/>Esgotado</label></div>
+          <div class="admin-price-row"><input class="field-input" placeholder="Disponibilidade (ex: só fim de semana)" value="${esc(_disponibilidades[it.id]||"")}" onchange="alterarDisponibilidade('${it.id}', this.value)" style="flex:1;"/></div>`;
+      }
+    });
+  });
+  list.innerHTML = html;
+  openModal("admin-painel");
+}
+function alterarPreco(id, valor){
+  const v = parseFloat(valor);
+  if(!isNaN(v) && v >= 0){
+    _precosCustom[id] = v;
+    salvarEstado();
+    rerenderMenuPrices();
+    showToast("Preço atualizado.");
+  }
+}
+function toggleEsgotadoAdmin(id, checked){
+  if(checked){ if(!_esgotados.includes(id)) _esgotados.push(id); }
+  else { _esgotados = _esgotados.filter(x=>x!==id); }
+  salvarEstado();
+  aplicarEsgotadosEDisponibilidades();
+}
+function alterarDisponibilidade(id, valor){
+  const v = (valor||"").trim();
+  if(v) _disponibilidades[id] = v; else delete _disponibilidades[id];
+  salvarEstado();
+  aplicarEsgotadosEDisponibilidades();
+  showToast(v ? "Disponibilidade atualizada." : "Disponibilidade removida.");
+}
+function adicionarItemAdmin(){
+  const opcoes = DATA.map((c,i)=>`${i+1}) ${c.icon} ${c.name}`).join("\n");
+  const escolha = prompt(`Em qual categoria adicionar o item?\n${opcoes}`, "1");
+  if(escolha === null) return;
+  const cat = DATA[parseInt(escolha,10)-1];
+  if(!cat){ showToast("Categoria inválida."); return; }
+  const nome = prompt("Nome do item:");
+  if(!nome || !nome.trim()) return;
+  const precoStr = prompt("Preço (ex.: 45.00):");
+  const preco = parseFloat((precoStr||"").replace(",", "."));
+  if(isNaN(preco) || preco < 0){ showToast("Preço inválido."); return; }
+  const desc = prompt("Descrição (opcional):") || "";
+  const id = "custom-" + Date.now().toString(36);
+  const item = { id, name: nome.trim(), price: preco, desc };
+  cat.items.push(item);
+  if(!_itensCustomPorCategoria[cat.id]) _itensCustomPorCategoria[cat.id] = [];
+  _itensCustomPorCategoria[cat.id].push(item);
+  const section = document.getElementById(cat.id);
+  const panel = section.querySelector(".panel:last-of-type") || section;
+  panel.insertAdjacentHTML("beforeend", itemRow(item, cat.id));
+  const countEl = section.querySelector(".count");
+  if(countEl) countEl.textContent = `${cat.items.length} ${cat.items.length===1?"item":"itens"}`;
+  aplicarEsgotadosEDisponibilidades();
+  salvarEstado();
+  showToast("Item adicionado! ✅");
+}
+function toggleLoja(){
+  _estado.lojaAberta = document.getElementById("adminAberta").checked;
+  const lbl = document.getElementById("adminAbertaLabel");
+  if(lbl) lbl.textContent = _estado.lojaAberta ? "Loja aberta agora" : "Loja fechada agora";
+  salvarEstado();
+}
+function setPromoModo(modo, silent){
+  _estado.promoModo = (modo === "on") ? "on" : "off";
+  ["on","off"].forEach(m=>{
+    const el = document.getElementById("promoModo" + m.charAt(0).toUpperCase()+m.slice(1));
+    if(el) el.classList.toggle("selected", m===_estado.promoModo);
+  });
+  if(!silent) salvarEstado();
+}
+
+// ─────────────────────────────────────────────────────────────
+// ACESSO DO DONO — long-press (segurar) na LOGO.png do hero abre o login do painel.
+// Âncora estável: #heroBadge (o <div> da logo). Não interfere no toque normal.
+(function setupOwnerAccess(){
+  const badge = document.getElementById("heroBadge");
+  if(!badge) return;
+  const HOLD_MS = 650;
+  let timer = null;
+  function clearTimer(){ if(timer){ clearTimeout(timer); timer = null; } }
+  function start(){ clearTimer(); timer = setTimeout(()=>{ timer = null; openAdminLogin(); }, HOLD_MS); }
+  badge.addEventListener("pointerdown", start);
+  badge.addEventListener("pointerup", clearTimer);
+  badge.addEventListener("pointerleave", clearTimer);
+  badge.addEventListener("pointercancel", clearTimer);
+  badge.addEventListener("contextmenu", e=> e.preventDefault());
+})();
+
+// ─────────────────────────────────────────────────────────────
 // INIT
 carregarEstado();
 aplicarConfig();
@@ -1032,7 +1364,10 @@ renderStatus();
 renderPromo();
 renderMenu();
 setActiveCategory(activeCat);
+aplicarItensCustom();
+aplicarEsgotadosEDisponibilidades();
 updateCartUI();
+setInterval(renderStatus, 60000);
 </script>
 </body>
 </html>
